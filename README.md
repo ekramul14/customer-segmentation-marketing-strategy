@@ -102,18 +102,13 @@ Feature Scaling:
 
 ## Deployment
 
-To clone this project run
+To deploy this project run
 
 ```bash
-git clone https://github.com/ekramul14/customer-segmentation-marketing-strategy.git  
+  git clone https://github.com/ekramul14/customer-segmentation-marketing-strategy.git  
 
 cd customer-segmentation-marketing-strategy  
-
 ```
-
-
-```
-
 
 
 ## Acknowledgements
@@ -128,6 +123,7 @@ cd customer-segmentation-marketing-strategy
 ![Correlation heatmap of features](./correlation_heatmap.png)
 ![Finding the Optimal Number of Clusters Using Elbow Method](./elbow_method.png)
 ![PCA-based scatter plot showing customer clusters](./customer_clusters_with_PCA.png)
+
 
 ## 🔗 Links
 [![portfolio](https://img.shields.io/badge/my_portfolio-000?style=for-the-badge&logo=ko-fi&logoColor=white)](https://mdtowsif1101.wixsite.com/my-site-1)

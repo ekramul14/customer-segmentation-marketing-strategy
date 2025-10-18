@@ -15,9 +15,10 @@ env/
 .env
 .env.local
 
-# Data & models
-data/processed/
-models/*.joblib
+# Data & models (keep models and processed data for deployment)
+# Comment out to allow deployment files:
+# data/processed/
+# models/*.joblib
 
 # Streamlit
 .streamlit/

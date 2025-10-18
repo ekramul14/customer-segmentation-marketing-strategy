@@ -1,0 +1,23 @@
+# Core Data Science Libraries
+pandas
+numpy
+scikit-learn
+joblib
+
+# API & Web Framework
+fastapi
+uvicorn
+streamlit
+python-multipart
+
+# Visualization
+plotly
+
+# Model Explainability
+shap
+
+# File Export
+openpyxl
+
+# Environment Management
+python-dotenv

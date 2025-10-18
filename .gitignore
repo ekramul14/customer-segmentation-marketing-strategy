@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Environment variables
+.env
+.env.local
+
+# Data & models
+data/processed/
+models/*.joblib
+
+# Streamlit
+.streamlit/
+
+# OS
+.DS_Store

@@ -7,6 +7,8 @@
 [![Streamlit](https://img.shields.io/badge/Streamlit-1.50-red.svg)](https://streamlit.io/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
+## 🚀 [Try Live Demo →](https://customer-segmentation-marketing-strategy-jvzek2gvt6hbuvwbcfyc8.streamlit.app/)
+
 ---
 
 ## 🎯 Project Overview
@@ -24,7 +26,11 @@ This project demonstrates a **complete, production-ready machine learning system
 
 ## 🚀 Quick Start
 
-### 1️⃣ Clone & Setup
+### 🌐 Try it Online (No Setup Required!)
+
+**👉 [Launch Live Demo](https://customer-segmentation-marketing-strategy-jvzek2gvt6hbuvwbcfyc8.streamlit.app/)** - Explore the full interactive dashboard instantly!
+
+### 1️⃣ Clone & Setup (Local Development)
 
 ```bash
 # Clone the repository

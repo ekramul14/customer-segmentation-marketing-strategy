@@ -49,16 +49,11 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Cluster descriptions
-CLUSTER_DESCRIPTIONS = {
-    0: {"name": "Transactors", "description": "Low balance, low cash advance usage, moderate full payment rate. Low-risk customers.", "color": "#1f77b4"},
-    1: {"name": "Revolvers", "description": "Moderate balance, low purchases, very low full payment rate. Using credit card as a loan.", "color": "#ff7f0e"},
-    2: {"name": "High-Value Customers", "description": "High balance, high purchases, moderate full payment rate. Active purchasers.", "color": "#2ca02c"},
-    3: {"name": "Low Tenure Customers", "description": "Very low balance and activity, low tenure. New or inactive customers.", "color": "#d62728"},
-    4: {"name": "VIP/Premium Customers", "description": "Very high balance and purchases, high full payment rate. Top-tier customers.", "color": "#9467bd"},
-    5: {"name": "Convenience Users", "description": "Low balance, highest full payment rate. Pay in full every month.", "color": "#8c564b"},
-    6: {"name": "Cash Advance Seekers", "description": "High balance and very high cash advances. High-risk segment.", "color": "#e377c2"},
-}
+# Segment names come from data/processed/segment_names.csv (written by infer.py),
+# because K-Means cluster IDs are arbitrary and change when the model is retrained.
+from segments import load_segment_info
+
+CLUSTER_DESCRIPTIONS = load_segment_info()
 
 # Feature names for display
 NUMERIC_FEATURES = [
@@ -179,7 +174,7 @@ if page == "🏠 Home":
             title="Customer Distribution by Segment",
             height=400
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
 
     with col2:
         st.markdown("#### 📋 Segment Descriptions")
@@ -190,8 +185,9 @@ if page == "🏠 Home":
                 percentage = (count / len(assignments)) * 100
 
                 st.markdown(f"""
-                **{info['name']}** ({count:,} customers - {percentage:.1f}%)
+                **{info['name']}** ({count:,} customers - {percentage:.1f}%, {info['pct_purchases']:.1f}% of purchases)
                 <span style="color: {info['color']};">●</span> {info['description']}
+                *Suggested approach:* {info['strategy']}
                 """, unsafe_allow_html=True)
                 st.markdown("---")
 
@@ -244,7 +240,7 @@ elif page == "📊 Data Exploration":
     )
     fig.update_traces(marker=dict(size=5, opacity=0.7))
     fig.update_layout(height=600)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
     # 3D PCA visualization
     st.markdown('<p class="sub-header">3D Interactive Cluster Visualization</p>', unsafe_allow_html=True)
@@ -275,7 +271,7 @@ elif page == "📊 Data Exploration":
     )
     fig_3d.update_traces(marker=dict(size=3, opacity=0.6))
     fig_3d.update_layout(height=700)
-    st.plotly_chart(fig_3d, use_container_width=True)
+    st.plotly_chart(fig_3d, width="stretch")
 
     st.info("💡 **Tip**: Use your mouse to rotate, zoom, and pan the 3D visualization!")
 
@@ -306,7 +302,7 @@ elif page == "📊 Data Exploration":
             title=f"{selected_feature} Distribution Across Clusters"
         )
         fig_box.update_layout(height=500, showlegend=False)
-        st.plotly_chart(fig_box, use_container_width=True)
+        st.plotly_chart(fig_box, width="stretch")
 
     # Cluster profiles table
     st.markdown('<p class="sub-header">Cluster Profiles (Average Values)</p>', unsafe_allow_html=True)
@@ -315,7 +311,7 @@ elif page == "📊 Data Exploration":
     profiles_display = profiles.copy()
     profiles_display.insert(1, 'Cluster_Name', [CLUSTER_DESCRIPTIONS[c]["name"] for c in profiles['cluster']])
 
-    st.dataframe(profiles_display, use_container_width=True, height=400)
+    st.dataframe(profiles_display, width="stretch", height=400)
 
 # ============================================================================
 # BATCH PREDICTION PAGE
@@ -351,7 +347,7 @@ elif page == "📤 Batch Prediction":
 
             # Preview data
             with st.expander("📋 Preview Uploaded Data", expanded=True):
-                st.dataframe(df.head(10), use_container_width=True)
+                st.dataframe(df.head(10), width="stretch")
 
             # Validate columns
             missing_cols = set(NUMERIC_FEATURES) - set(df.columns)
@@ -361,7 +357,7 @@ elif page == "📤 Batch Prediction":
             else:
                 st.success("✅ All required columns present!")
 
-                if st.button("🚀 Generate Predictions", type="primary", use_container_width=True):
+                if st.button("🚀 Generate Predictions", type="primary", width="stretch"):
                     with st.spinner("Generating predictions..."):
                         # Prepare features
                         X = df[NUMERIC_FEATURES].values
@@ -402,11 +398,11 @@ elif page == "📤 Batch Prediction":
                             labels={"x": "Segment", "y": "Number of Customers"}
                         )
                         fig.update_layout(showlegend=False, height=400)
-                        st.plotly_chart(fig, use_container_width=True)
+                        st.plotly_chart(fig, width="stretch")
 
                         # Show results table
                         with st.expander("📊 View All Predictions", expanded=False):
-                            st.dataframe(df, use_container_width=True)
+                            st.dataframe(df, width="stretch")
 
                         # Download options
                         st.markdown('<p class="sub-header">Download Results</p>', unsafe_allow_html=True)
@@ -421,7 +417,7 @@ elif page == "📤 Batch Prediction":
                                 data=csv,
                                 file_name="customer_segments.csv",
                                 mime="text/csv",
-                                use_container_width=True
+                                width="stretch"
                             )
 
                         with col2:
@@ -435,7 +431,7 @@ elif page == "📤 Batch Prediction":
                                 data=buffer.getvalue(),
                                 file_name="customer_segments.xlsx",
                                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                                use_container_width=True
+                                width="stretch"
                             )
 
         except Exception as e:
@@ -490,10 +486,10 @@ elif page == "🎯 Single Prediction":
                 key=feature
             )
 
-    if st.button("🔮 Predict Segment", type="primary", use_container_width=True):
+    if st.button("🔮 Predict Segment", type="primary", width="stretch"):
         with st.spinner("Analyzing customer profile..."):
             # Prepare input
-            arr = np.array([[vals[c] for c in NUMERIC_FEATURES]])
+            arr = pd.DataFrame([[vals[c] for c in NUMERIC_FEATURES]], columns=NUMERIC_FEATURES)
             arr_imputed = imputer.transform(arr)
             arr_scaled = scaler.transform(arr_imputed)
 
@@ -518,22 +514,28 @@ elif page == "🎯 Single Prediction":
             with col2:
                 # SHAP explanation
                 st.markdown("#### 🔍 AI Explainability (SHAP Values)")
-                st.info("This shows which features most influenced this prediction.")
+                st.info("Which features most affect how closely this customer matches their segment.")
 
                 try:
-                    # Create SHAP explainer
-                    explainer = shap.KernelExplainer(
-                        lambda x: kmeans.predict(scaler.transform(imputer.transform(x))),
-                        shap.sample(scaler.transform(imputer.transform(features.values[:100])), 50)
-                    )
+                    # Explain how close the customer is to their segment's centre.
+                    # (Explaining kmeans.predict directly is not meaningful: it returns an integer label.)
+                    centre = kmeans.cluster_centers_[cluster]
+
+                    def closeness(x):
+                        z = scaler.transform(imputer.transform(pd.DataFrame(x, columns=NUMERIC_FEATURES)))
+                        return -np.linalg.norm(z - centre, axis=1)
+
+                    # features.csv is already scaled, so convert the background back to the raw scale
+                    background = shap.sample(scaler.inverse_transform(features.values), 50, random_state=0)
+                    explainer = shap.KernelExplainer(closeness, background)
 
                     # Get SHAP values
-                    shap_values = explainer.shap_values(arr)
+                    shap_values = explainer.shap_values(arr, nsamples=200)
 
                     # Create feature importance plot
                     feature_importance = pd.DataFrame({
                         'Feature': NUMERIC_FEATURES,
-                        'Importance': np.abs(shap_values[0])
+                        'Importance': np.abs(np.asarray(shap_values).reshape(-1)[:len(NUMERIC_FEATURES)])
                     }).sort_values('Importance', ascending=True).tail(10)
 
                     fig = px.bar(
@@ -546,7 +548,7 @@ elif page == "🎯 Single Prediction":
                         color_continuous_scale='Blues'
                     )
                     fig.update_layout(height=400)
-                    st.plotly_chart(fig, use_container_width=True)
+                    st.plotly_chart(fig, width="stretch")
 
                 except Exception as e:
                     st.warning(f"SHAP explanation temporarily unavailable. Showing feature comparison instead.")
@@ -563,7 +565,7 @@ elif page == "🎯 Single Prediction":
                         })
 
                     comparison_df = pd.DataFrame(comparison_data)
-                    st.dataframe(comparison_df, use_container_width=True)
+                    st.dataframe(comparison_df, width="stretch")
 
 # ============================================================================
 # CLUSTER ANALYSIS PAGE
@@ -662,7 +664,7 @@ elif page == "🔍 Cluster Analysis":
             height=600
         )
 
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
 
         # Detailed comparison table
         st.markdown('<p class="sub-header">Detailed Feature Comparison</p>', unsafe_allow_html=True)
@@ -683,7 +685,7 @@ elif page == "🔍 Cluster Analysis":
             })
 
         comparison_df = pd.DataFrame(comparison_data)
-        st.dataframe(comparison_df, use_container_width=True, height=600)
+        st.dataframe(comparison_df, width="stretch", height=600)
 
         # Business insights
         st.markdown('<p class="sub-header">💡 Business Insights</p>', unsafe_allow_html=True)

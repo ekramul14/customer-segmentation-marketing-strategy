@@ -1,13 +1,14 @@
 # Core Data Science Libraries
 pandas
 numpy
-scikit-learn
+# Pinned: the saved models in models/ were built with this version
+scikit-learn==1.7.2
 joblib
 
 # API & Web Framework
 fastapi
 uvicorn
-streamlit
+streamlit>=1.50
 python-multipart
 
 # Visualization
@@ -21,3 +22,6 @@ openpyxl
 
 # Environment Management
 python-dotenv
+
+# Testing
+pytest

@@ -1,0 +1,8 @@
+cluster,name,description,strategy,color,n_customers,pct_customers,pct_purchases
+0,Cash-Advance Heavy,"Average cash advance $4,912 (5.0x average) with a high balance of $4,820.",Manage risk: monitor utilization and offer installment or balance-transfer plans instead of cash advances.,#1f77b4,991,11.07,5.73
+1,Full Payers,Pay the full balance 80% of the time (5.2x average) and keep low balances.,Deepen spending: cashback and category rewards; they generate little interest income.,#ff7f0e,1113,12.44,16.02
+2,Active Revolvers,Buy often (purchase frequency 0.89) but rarely pay in full (6%).,Offer installment plans and promotional rates; they are a core interest-revenue segment.,#2ca02c,2417,27.01,38.75
+3,High Minimum Payments,"Average minimum payment $22,811 (27x average); a small group worth reviewing individually.",Review individually: may signal credit stress or data-quality issues.,#d62728,55,0.61,0.48
+4,New Customers,Average tenure 7.3 months vs 11.5 overall.,Activate early: onboarding campaigns and first-purchase incentives.,#9467bd,659,7.36,2.87
+5,Big Spenders,"Average purchases $10,002 (10.0x the overall average) and the highest spending of any segment.","Protect and grow: premium rewards, credit-limit reviews, and retention offers.",#8c564b,236,2.64,26.29
+6,Low Activity,Low purchase frequency (0.16) and average purchases of $255.,Re-engage with targeted spend incentives and watch for dormancy.,#e377c2,3479,38.87,9.87

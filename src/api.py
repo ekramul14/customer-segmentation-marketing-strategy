@@ -16,16 +16,14 @@ NUMERIC = [
  "CREDIT_LIMIT","PAYMENTS","MINIMUM_PAYMENTS","PRC_FULL_PAYMENT","TENURE"
 ]
 
-# Cluster business descriptions
-CLUSTER_DESCRIPTIONS = {
-    0: {"name": "Transactors", "description": "Low balance, low cash advance usage, moderate full payment rate. Low-risk customers."},
-    1: {"name": "Revolvers", "description": "Moderate balance, low purchases, very low full payment rate. Using credit card as a loan."},
-    2: {"name": "High-Value Customers", "description": "High balance, high purchases, moderate full payment rate. Active purchasers."},
-    3: {"name": "Low Tenure Customers", "description": "Very low balance and activity, low tenure. New or inactive customers."},
-    4: {"name": "VIP/Premium Customers", "description": "Very high balance and purchases, high full payment rate. Top-tier customers."},
-    5: {"name": "Convenience Users", "description": "Low balance, highest full payment rate. Pay in full every month."},
-    6: {"name": "Cash Advance Seekers", "description": "High balance and very high cash advances. High-risk segment."},
-}
+# Segment names come from data/processed/segment_names.csv (written by infer.py),
+# because K-Means cluster IDs are arbitrary and change when the model is retrained.
+try:
+    from src.segments import load_segment_info
+except ImportError:  # running from inside src/
+    from segments import load_segment_info
+
+CLUSTER_DESCRIPTIONS = load_segment_info()
 
 app = FastAPI(
     title="Customer Segmentation API",
@@ -77,12 +75,15 @@ class PredictionResponse(BaseModel):
     cluster: int
     cluster_name: str
     description: str
-    confidence: str = "high"
+    strategy: str | None = None
 
 class ClusterInfo(BaseModel):
     cluster_id: int
     name: str
     description: str
+    strategy: str | None = None
+    pct_customers: float | None = None
+    pct_purchases: float | None = None
     profile: dict | None = None
 
 @app.get("/health", tags=["System"])
@@ -98,7 +99,7 @@ def predict(c: Customer):
     Provide customer features and get their cluster assignment with business interpretation.
     """
     try:
-        arr = np.array([[getattr(c, f) for f in NUMERIC]], dtype=float)
+        arr = pd.DataFrame([[getattr(c, f) for f in NUMERIC]], columns=NUMERIC, dtype=float)
         arr = imputer.transform(arr)
         arr = scaler.transform(arr)
         cluster = int(kmeans.predict(arr)[0])
@@ -109,7 +110,8 @@ def predict(c: Customer):
         return PredictionResponse(
             cluster=cluster,
             cluster_name=cluster_info["name"],
-            description=cluster_info["description"]
+            description=cluster_info["description"],
+            strategy=cluster_info.get("strategy")
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Prediction error: {str(e)}")
@@ -137,7 +139,7 @@ async def predict_batch(file: UploadFile = File(..., description="CSV file with 
             )
 
         # Prepare features
-        X = df[NUMERIC].values
+        X = df[NUMERIC].astype(float)
         X_imputed = imputer.transform(X)
         X_scaled = scaler.transform(X_imputed)
 
@@ -185,6 +187,9 @@ def get_clusters():
             cluster_id=cluster_id,
             name=info["name"],
             description=info["description"],
+            strategy=info.get("strategy"),
+            pct_customers=info.get("pct_customers"),
+            pct_purchases=info.get("pct_purchases"),
             profile=profile
         ))
 
@@ -211,5 +216,8 @@ def get_cluster(cluster_id: int):
         cluster_id=cluster_id,
         name=info["name"],
         description=info["description"],
+        strategy=info.get("strategy"),
+        pct_customers=info.get("pct_customers"),
+        pct_purchases=info.get("pct_purchases"),
         profile=profile
     )

@@ -51,6 +51,8 @@ This project groups 8,950 credit card customers into segments a marketing team c
 - Big Spenders are just **2.6% of customers but 26% of purchases**.
 - Cash-Advance Heavy customers are **11% of customers but 56% of all cash-advance volume**.
 
+Seven clusters achieved the best silhouette score among the tested values of K, approximately 0.215. This suggests overlapping behavioral groups rather than sharply separated customer types. Segment names summarize observed profiles. Marketing actions are proposals; this project has not measured campaign lift, retention improvement, or revenue gains in a controlled business deployment.
+
 ---
 
 ## 🚀 Quick Start
